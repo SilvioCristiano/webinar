@@ -1,0 +1,36 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: javamicro-k8s-deployment01
+spec:
+  selector:
+    matchLabels:
+      app: javamicro-k8s-deployment01
+  replicas: 3 # deployment runs 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: javamicro-k8s-deployment01
+    spec:
+      containers:
+      - name: javamicro-k8s-deployment01
+        image: iad.ocir.io/id7b1zcf1teq/cristiano/demodocker:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9090 #Endpoint is at port 80 in the container
+      imagePullSecrets:
+      - name: ocirsecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: javamicro-k8s-deployment01
+spec:
+  type: NodePort #Exposes the service as a node port
+  ports:
+  - port: 9090
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app: javamicro-k8s-deployment01
+   
